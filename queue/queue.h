@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright(C)2014-2015 by FlyLu <fly.lu@iStarChip.com>                 *
+ *   Copyright(C)2014-2015 by FlyLu <Linch.Embedded@gmail.com>             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU Lesser General Public License as        *
@@ -21,8 +21,7 @@
 #define __QUEUE_H__
 
 /*============================ INCLUDES ======================================*/
-#include ".\app_cfg.h"
-#include ".\interface.h"
+#include "..\key.h"
 
 /*============================ MACROS ========================================*/
 /*============================ MACROFIED FUNCTIONS ===========================*/
@@ -60,24 +59,24 @@
 
 /*============================ TYPES =========================================*/
 //! \name key queue type
-//! @{                                            
-DEF_CLASS(key_queue_t)
+//! @{ 
+typedef struct {
     key_t   *ptBuffer; 
     uint16_t hwSize;
     uint16_t hwHead;
     uint16_t hwTail;
     uint16_t hwLength;
-END_DEF_CLASS(key_queue_t)
+} key_queue_t;
 //! @}
 
 //! \name queue interface
 //! @{
-DEF_INTERFACE(i_queue_t)
+typedef struct {
     bool (*IsEmpty)(key_queue_t *ptQueue);
     bool (*Enqueue)(key_queue_t *ptQueue, key_t tKey);
     bool (*Dequeue)(key_queue_t *ptQueue, key_t *ptkey);
     bool (*Init)(key_queue_t *ptQueue, key_t *ptkey, uint16_t hwSize);
-END_DEF_INTERFACE(i_queue_t)
+} i_queue_t;
 //! @}
 
 /*============================ GLOBAL VARIABLES ==============================*/ 

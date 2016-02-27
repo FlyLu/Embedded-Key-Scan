@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright(C)2014-2015 by FlyLu <fly.lu@iStarChip.com>                 *
+ *   Copyright(C)2014-2015 by FlyLu <Linch.Embedded@gmail.com>             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU Lesser General Public License as        *
@@ -18,9 +18,8 @@
  ***************************************************************************/
 
 /*============================ INCLUDES ======================================*/
-#include ".\app_cfg.h"
+#include ".\key.h"
 #include ".\queue\queue.h"
-#include ".\interface.h"
 
 /*============================ MACROS ========================================*/
 //! \brief need to key sacn counter defined
@@ -42,22 +41,21 @@
 #ifndef QUEUE_SIZE
 #error No defined QUEUE_SIZE
 #endif 
-
 /*============================ MACROFIED FUNCTIONS ===========================*/
 /*============================ TYPES =========================================*/
 /*============================ GLOBAL VARIABLES ==============================*/
 /*============================ LOCAL VARIABLES ===============================*/
 //! \brief key frontend buffer
-NO_INIT static key_t s_tKeyFrontendBuff[QUEUE_SIZE]; 
+static key_t s_tKeyFrontendBuff[QUEUE_SIZE]; 
 
 //! \brief key detector buffer
-NO_INIT static key_t s_tKeyDetectorBuff[QUEUE_SIZE]; 
+static key_t s_tKeyDetectorBuff[QUEUE_SIZE]; 
 
 //! \brief key frontend queue
-NO_INIT static key_queue_t s_tKeyFrontendFIFO;
+static key_queue_t s_tKeyFrontendFIFO;
 
 //! \brief key detector queue
-NO_INIT static key_queue_t s_tKeyDetectorFIFO;
+static key_queue_t s_tKeyDetectorFIFO;
 
 /*============================ PROTOTYPES ====================================*/
 /*============================ IMPLEMENTATION ================================*/
@@ -138,7 +136,7 @@ static fsm_rt_t key_frontend(void)
             break;
         
         case CHECK_DOWN:
-             if (KEY_NULL != s_tKey.chKeyValue) {
+            if (KEY_NULL != s_tKey.chKeyValue) {
                 s_tKey.tEvent = KEY_DOWN;
                 KEY_ENQUEUE(&s_tKeyFrontendFIFO, s_tKey);
                 s_tLastKey = s_tKey;

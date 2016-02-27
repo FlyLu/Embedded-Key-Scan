@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright(C)2014-2015 by FlyLu <fly.lu@iStarChip.com>                 *
+ *   Copyright(C)2014-2015 by FlyLu <Linch.Embedded@gmail.com>             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU Lesser General Public License as        *
@@ -18,33 +18,13 @@
  ***************************************************************************/
 
 /*============================ INCLUDES ======================================*/
-#include ".\app_cfg.h"
-#include ".\interface.h"
+#include ".\queue.h"
 /*============================ MACROS ========================================*/
 #define this        (*ptThis)
 
 /*============================ MACROFIED FUNCTIONS ===========================*/
 /*============================ TYPES =========================================*/
-//! \name key queue type
-//! @{ 
-DEF_CLASS(key_queue_t)
-    key_t   *ptBuffer; 
-    uint16_t hwSize;
-    uint16_t hwHead;
-    uint16_t hwTail;
-    uint16_t hwLength;
-END_DEF_CLASS(key_queue_t)
-//! @}
 
-//! \name queue interface
-//! @{
-DEF_INTERFACE(i_queue_t)
-    bool (*IsEmpty)(key_queue_t *ptQueue);
-    bool (*Enqueue)(key_queue_t *ptQueue, key_t tKey);
-    bool (*Dequeue)(key_queue_t *ptQueue, key_t *ptkey);
-    bool (*Init)(key_queue_t *ptQueue, key_t *ptkey, uint16_t hwSize);
-END_DEF_INTERFACE(i_queue_t)
-//! @}
 
 /*============================ LOCAL VARIABLES ===============================*/
 /*============================ PROTOTYPES ====================================*/
@@ -98,8 +78,8 @@ const i_queue_t QUEUE = {               //!< queue interface
  */
 static bool init_queue(key_queue_t *ptQueue, key_t *ptkey, uint16_t hwSize)
 {
-    CLASS(key_queue_t) *ptThis = (CLASS(key_queue_t) *)ptQueue;
-
+	key_queue_t *ptThis = ptQueue;
+	
     if (NULL == ptThis || NULL == ptkey) {
         return false;
     }
@@ -121,7 +101,7 @@ static bool init_queue(key_queue_t *ptQueue, key_t *ptkey, uint16_t hwSize)
  */ 
 static bool is_queue_empty(key_queue_t *ptQueue)
 {
-    CLASS(key_queue_t) *ptThis = (CLASS(key_queue_t) *)ptQueue;
+	key_queue_t *ptThis = ptQueue;
 
     if (NULL == ptThis) {
         return false;
@@ -139,7 +119,7 @@ static bool is_queue_empty(key_queue_t *ptQueue)
  */                  
 static bool enqueue(key_queue_t *ptQueue, key_t tKey)
 {
-     CLASS(key_queue_t) *ptThis = (CLASS(key_queue_t) *)ptQueue;
+	key_queue_t *ptThis = ptQueue;
 
     if (NULL == ptThis) {
         return false;
@@ -165,7 +145,7 @@ static bool enqueue(key_queue_t *ptQueue, key_t tKey)
  */ 
 static bool dequeue(key_queue_t *ptQueue, key_t *ptkey)
 {
-    CLASS(key_queue_t) *ptThis = (CLASS(key_queue_t) *)ptQueue;
+	key_queue_t *ptThis = ptQueue;
 
     if (NULL == ptThis || NULL == ptkey) {
         return false;
