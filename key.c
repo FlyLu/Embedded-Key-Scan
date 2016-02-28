@@ -199,13 +199,13 @@ fsm_rt_t key_detector(void)
 
         case GET_KEY_1:
             if (KEY_DEQUEUE(&s_tKeyFrontendFIFO, &s_tKey)) {
-                KEY_ENQUEUE(&s_tKeyDetectorFIFO, s_tKey);
                 s_tState = CHECK_DOWN;
             }
             break;
 
         case CHECK_DOWN:
             if (KEY_DOWN == s_tKey.tEvent) {
+				KEY_ENQUEUE(&s_tKeyDetectorFIFO, s_tKey);
                 s_tState = CHECK_LONG_KEY;
             } else {
                 KEY_DETECTOR_RESET_FSM();
