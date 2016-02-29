@@ -27,16 +27,16 @@
 
 /*============================ MACROS ========================================*/
 //! \brief No key pressed
-#define KEY_NULL        (0)
-
 #define QUEUE_SIZE          (10)
 
-#define KEY_SCAN_COUNT      (10000)
+#define KEY_SCAN_COUNT      (2)
 
-#define LONG_KEY_TIME       (50000)
+#define LONG_KEY_TIME       (15)
 
-#define KEY_REPEAT_TIME     (30000)
+#define KEY_REPEAT_TIME     (10)
  
+#define KEY_USING_OS        
+
 extern uint8_t get_key_scaned_value();
 #define GET_KEY_SCANED_VALUE()  get_key_scaned_value()
 
@@ -45,6 +45,7 @@ extern uint8_t get_key_scaned_value();
 //! \name key status enum type
 //! @{ 
 typedef enum {
+    KEY_NULL  = 0,      //!< no key press
     KEY_DOWN ,          //!< key press down
     KEY_UP,             //!< key release
     KEY_PRESSED,        //!< key pressed

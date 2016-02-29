@@ -205,7 +205,7 @@ fsm_rt_t key_detector(void)
 
         case CHECK_DOWN:
             if (KEY_DOWN == s_tKey.tEvent) {
-				KEY_ENQUEUE(&s_tKeyDetectorFIFO, s_tKey);
+                KEY_ENQUEUE(&s_tKeyDetectorFIFO, s_tKey);
                 s_tState = CHECK_LONG_KEY;
             } else {
                 KEY_DETECTOR_RESET_FSM();
@@ -285,6 +285,20 @@ void key_init(void)
 }
 
 
+#ifdef KEY_USING_OS
+
+extern void os_key_event_send(void);
+
+void os_key_event_notfiy()
+{
+    if (!IS_KEY_QUEUE_EMPTY(&s_tKeyDetectorFIFO)) {
+        os_key_event_send();
+    }
+}
+
+#endif 
+
+
 /*! \brief key task
  *! \param none
  *! \return none
@@ -293,6 +307,10 @@ void key_task(void)
 {
     key_frontend();
     key_detector();
+
+#ifdef KEY_USING_OS
+    os_key_event_notfiy();
+#endif
 }
 
 
