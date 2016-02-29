@@ -20,14 +20,24 @@
 /*============================ INCLUDES ======================================*/
 #include ".\queue.h"
 /*============================ MACROS ========================================*/
-#define this        (*ptThis)
+#define this        (*ptQueue)
 
 /*============================ MACROFIED FUNCTIONS ===========================*/
 /*============================ TYPES =========================================*/
-
-
 /*============================ LOCAL VARIABLES ===============================*/
 /*============================ PROTOTYPES ====================================*/
+__weak void queue_critical_lock(lock_t *pLock)
+{
+    
+}
+
+
+__weak void queue_critical_unlock(lock_t *pLock)
+{
+
+}
+
+
 /*! \brief is key queue enmty
  *! \param ptQueue key queue type
  *! \return ture  key queue is empty
@@ -77,10 +87,8 @@ const i_queue_t QUEUE = {               //!< queue interface
  *! \return false initialization fail
  */
 static bool init_queue(key_queue_t *ptQueue, key_t *ptkey, uint16_t hwSize)
-{
-	key_queue_t *ptThis = ptQueue;
-	
-    if (NULL == ptThis || NULL == ptkey) {
+{	
+    if (NULL == ptQueue || NULL == ptkey) {
         return false;
     }
 
@@ -101,9 +109,7 @@ static bool init_queue(key_queue_t *ptQueue, key_t *ptkey, uint16_t hwSize)
  */ 
 static bool is_queue_empty(key_queue_t *ptQueue)
 {
-	key_queue_t *ptThis = ptQueue;
-
-    if (NULL == ptThis) {
+    if (NULL == ptQueue) {
         return false;
     }
 
@@ -119,22 +125,27 @@ static bool is_queue_empty(key_queue_t *ptQueue)
  */                  
 static bool enqueue(key_queue_t *ptQueue, key_t tKey)
 {
-	key_queue_t *ptThis = ptQueue;
-
-    if (NULL == ptThis) {
+    bool bResult = false;
+    lock_t tQueueLock;
+   
+    if (NULL == ptQueue) {
         return false;
     }
 
+    queue_critical_lock(&tQueueLock);
+    
     if (this.hwSize > this.hwLength) {          //!< queue is not full
         this.ptBuffer[this.hwTail++] = tKey;    //!< enter queue 
         this.hwLength ++;
         if (this.hwSize == this.hwTail) {
             this.hwTail = 0;
         }
-        return true;
+        bResult = true;
     }
 
-    return false;    
+    queue_critical_unlock(&tQueueLock);
+
+    return bResult;    
 }
 
 /*! \brief key dequeue 
@@ -145,11 +156,14 @@ static bool enqueue(key_queue_t *ptQueue, key_t tKey)
  */ 
 static bool dequeue(key_queue_t *ptQueue, key_t *ptkey)
 {
-	key_queue_t *ptThis = ptQueue;
+    bool bResult = false;
+    lock_t tQueueLock;
 
-    if (NULL == ptThis || NULL == ptkey) {
+    if (NULL == ptQueue || NULL == ptkey) {
         return false;
     }
+
+    queue_critical_lock(&tQueueLock);
 
     if (0 != this.hwLength) {                    //!< queue is not empty
         *ptkey = this.ptBuffer[this.hwHead++];   //!< output queue
@@ -157,10 +171,12 @@ static bool dequeue(key_queue_t *ptQueue, key_t *ptkey)
         if (this.hwSize == this.hwHead) {
             this.hwHead = 0;
         }
-        return true;
+        bResult =  true;
     }
 
-    return false;
+    queue_critical_unlock(&tQueueLock);
+
+    return bResult;
 }
 
 /* EOF */

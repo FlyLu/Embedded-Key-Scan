@@ -85,6 +85,15 @@ extern const i_queue_t QUEUE;   //!< queue interface
 /*============================ LOCAL VARIABLES ===============================*/
 /*============================ PROTOTYPES ====================================*/
 /*============================ IMPLEMENTATION ================================*/
+//! \brief if 8bit mcu, #define lock_t unsigned char 
+//!        if 32bit mcu, #define lock_t unsigned char 
+#define lock_t unsigned int
+
+//! \brief  The follwing interface protect EnQueue and DeQueue security, 
+//!         [optional] you can implement it or not. 
+extern __weak void queue_critical_lock(lock_t *pLock); 
+
+extern __weak void queue_critical_unlock(lock_t *pLock);
 
 #endif
 /* EOF */
