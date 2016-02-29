@@ -26,7 +26,8 @@
 #include <stdbool.h>
 
 /*============================ MACROS ========================================*/
-//! \brief No key pressed
+//! \brief you can modify this value to adapt your program
+
 #define QUEUE_SIZE          (10)
 
 #define KEY_SCAN_COUNT      (2)
@@ -34,11 +35,6 @@
 #define LONG_KEY_TIME       (15)
 
 #define KEY_REPEAT_TIME     (10)
- 
-#define KEY_USING_OS        
-
-extern uint8_t get_key_scaned_value();
-#define GET_KEY_SCANED_VALUE()  get_key_scaned_value()
 
 /*============================ MACROFIED FUNCTIONS ===========================*/
 /*============================ TYPES =========================================*/
@@ -96,6 +92,19 @@ extern void key_task(void);
 extern bool get_key(key_t *ptKey);
 
 /*============================ IMPLEMENTATION ================================*/
+//! \brief you need to implment this function, you can refer key example.
+extern uint8_t get_key_scaned_value();
+
+//! \brief if KEY_USING_OS = 1, indicate your program run on the os.
+#define KEY_USING_OS        0
+
+#if KEY_USING_OS
+
+//! \brief if KEY_USING_OS = 1, you need to implment this function, 
+//!        you can refer key example.
+extern void os_key_event_send(void);
+
+#endif 
 
 #endif 
 /* EOF */

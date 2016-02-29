@@ -285,7 +285,7 @@ void key_init(void)
 }
 
 
-#ifdef KEY_USING_OS
+#if KEY_USING_OS
 
 extern void os_key_event_send(void);
 
@@ -308,7 +308,7 @@ void key_task(void)
     key_frontend();
     key_detector();
 
-#ifdef KEY_USING_OS
+#if KEY_USING_OS
     os_key_event_notfiy();
 #endif
 }
