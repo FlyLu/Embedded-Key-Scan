@@ -85,8 +85,8 @@ extern const i_queue_t QUEUE;   //!< queue interface
 /*============================ LOCAL VARIABLES ===============================*/
 /*============================ PROTOTYPES ====================================*/
 /*============================ IMPLEMENTATION ================================*/
-//! \brief if 8bit mcu, #define lock_t unsigned char 
-//!        if 32bit mcu, #define lock_t unsigned char 
+//! \brief if 8bit mcu, #define lock_t unsigned char
+//!        if 32bit mcu, #define lock_t unsigned int 
 #define lock_t unsigned int
 
 //! \brief  The follwing interface protect EnQueue and DeQueue security, 
