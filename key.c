@@ -42,6 +42,8 @@
 #error No defined QUEUE_SIZE
 #endif 
 /*============================ MACROFIED FUNCTIONS ===========================*/
+#define GET_KEY_SCANED_VALUE()  get_key_scaned_value()
+
 /*============================ TYPES =========================================*/
 /*============================ GLOBAL VARIABLES ==============================*/
 /*============================ LOCAL VARIABLES ===============================*/
@@ -130,10 +132,10 @@ static fsm_rt_t key_frontend(void)
 
         case GET_KEY_1:
             s_tKey.chKeyValue = GET_KEY_SCANED_VALUE();
-            if (fsm_rt_cpl == filter(s_tKey.chKeyValue)) {
-                s_tState = CHECK_DOWN;  
+            if (fsm_rt_cpl != filter(s_tKey.chKeyValue)) {
+                break;
             }
-            break;
+            s_tState = CHECK_DOWN;  
         
         case CHECK_DOWN:
             if (KEY_NULL != s_tKey.chKeyValue) {
@@ -148,10 +150,10 @@ static fsm_rt_t key_frontend(void)
         
         case GET_KEY_2:
             s_tKey.chKeyValue = GET_KEY_SCANED_VALUE();
-            if (fsm_rt_cpl == filter(s_tKey.chKeyValue)) {
-                s_tState = CHECK_UP;  
+            if (fsm_rt_cpl != filter(s_tKey.chKeyValue)) {            
+                break;
             }
-            break;
+            s_tState = CHECK_UP;  
 
         case CHECK_UP:
             if (s_tLastKey.chKeyValue != s_tKey.chKeyValue) {
@@ -159,9 +161,8 @@ static fsm_rt_t key_frontend(void)
                 KEY_ENQUEUE(&s_tKeyFrontendFIFO, s_tLastKey);
                 KEY_FRONTEND_RESET_FSM();
                 return fsm_rt_cpl;
-            } else {
-                s_tState = GET_KEY_2;
-            }
+            } 
+            s_tState = GET_KEY_2;
             break;  
     }
 
@@ -198,10 +199,10 @@ fsm_rt_t key_detector(void)
             //break;
 
         case GET_KEY_1:
-            if (KEY_DEQUEUE(&s_tKeyFrontendFIFO, &s_tKey)) {
-                s_tState = CHECK_DOWN;
+            if (!KEY_DEQUEUE(&s_tKeyFrontendFIFO, &s_tKey)) {
+                break;
             }
-            break;
+            s_tState = CHECK_DOWN;
 
         case CHECK_DOWN:
             if (KEY_DOWN == s_tKey.tEvent) {
@@ -209,28 +210,26 @@ fsm_rt_t key_detector(void)
                 s_tState = CHECK_LONG_KEY;
             } else {
                 KEY_DETECTOR_RESET_FSM();
+                break;
             }
-            break;
 
         case CHECK_LONG_KEY:
             if (LONG_KEY_TIME <= s_wTimeOut++) {
                 s_tKey.tEvent = KEY_LONG_PRESSED;
                 KEY_ENQUEUE(&s_tKeyDetectorFIFO, s_tKey);   
                 s_wTimeOut = 0;
-                s_tState = GET_KEY_3;
-            } else {
-                s_tState = GET_KEY_2;
-            }
-            break;
+                s_tState = CHECK_REPEAT_KEY;
+                break;
+            } 
+            s_tState = GET_KEY_2;
             
         case GET_KEY_2:
-            if (KEY_DEQUEUE(&s_tKeyFrontendFIFO, &s_tKey)) {
-                s_tState = CHECK_UP_1;
-            } else {
+            if (!KEY_DEQUEUE(&s_tKeyFrontendFIFO, &s_tKey)) {
                 s_tState = CHECK_LONG_KEY;
-            }
-            break;
-            
+                break;
+            }                 
+            s_tState = CHECK_UP_1;
+
         case CHECK_UP_1:
             if (KEY_UP == s_tKey.tEvent) {
                 KEY_ENQUEUE(&s_tKeyDetectorFIFO, s_tKey);
@@ -238,26 +237,8 @@ fsm_rt_t key_detector(void)
                 KEY_ENQUEUE(&s_tKeyDetectorFIFO, s_tKey);
                 KEY_DETECTOR_RESET_FSM();
                 return fsm_rt_cpl;
-            } else {
-                KEY_DETECTOR_RESET_FSM();
-            }
-            break;
-
-        case GET_KEY_3:
-            if (KEY_DEQUEUE(&s_tKeyFrontendFIFO, &s_tKey)) {
-                s_tState = CHECK_UP_2;
-            } else {
-                s_tState = CHECK_REPEAT_KEY;
-            }
-            break;
-
-        case CHECK_UP_2:
-            if (KEY_UP == s_tKey.tEvent) {
-                KEY_ENQUEUE(&s_tKeyDetectorFIFO, s_tKey);
-                KEY_DETECTOR_RESET_FSM();
-                return fsm_rt_cpl;      
-            }
-            s_tState = GET_KEY_3;
+            } 
+            KEY_DETECTOR_RESET_FSM();
             break;
 
         case CHECK_REPEAT_KEY:
@@ -265,8 +246,24 @@ fsm_rt_t key_detector(void)
                 s_wTimeOut = 0;
                 s_tKey.tEvent = KEY_REPEAT;
                 KEY_ENQUEUE(&s_tKeyDetectorFIFO, s_tKey);
+                break;
             }
             s_tState = GET_KEY_3;
+
+        case GET_KEY_3:
+            if (!KEY_DEQUEUE(&s_tKeyFrontendFIFO, &s_tKey)) {
+                s_tState = CHECK_REPEAT_KEY;
+                break;
+            } 
+            s_tState = CHECK_UP_2;
+
+        case CHECK_UP_2:
+            if (KEY_UP == s_tKey.tEvent) {
+                KEY_ENQUEUE(&s_tKeyDetectorFIFO, s_tKey);
+                KEY_DETECTOR_RESET_FSM();
+                return fsm_rt_cpl;      
+            } 
+            KEY_DETECTOR_RESET_FSM();
             break;
     }
 
@@ -286,8 +283,6 @@ void key_init(void)
 
 
 #if KEY_USING_OS
-
-extern void os_key_event_send(void);
 
 void os_key_event_notfiy()
 {
