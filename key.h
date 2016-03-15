@@ -29,14 +29,23 @@
 //! \brief you can modify this value to adapt your program
 #define QUEUE_SIZE          (5)
 
-//!< \note KEY_DOWN Time = KEY_SCAN_COUNT + 2
+//! \brief Key event time calculation
+//!        KEY_SCAN_TIME: how long to run key_task() function. e.g 20ms once
+
+//! \brief KEY_DOWN Event  
+//!        KEY_DOWN = KEY_SCAN_COUNT + 2
+//!        KEY_DOWN Time = KEY_DOWN * KEY_SCAN_TIME
 #define KEY_SCAN_COUNT      (5)     
 
-//!< \note KEY_LONG_PRESSED Time = KEY_DOWN + LONG_KEY_TIME
+//! \brief KEY_LONG_PRESSED Event  
+//!        KEY_LONG_PRESSED =  KEY_DOWN + LONG_KEY_TIME
+//!        KEY_LONG_PRESSED Time = KEY_LONG_PRESSED * KEY_SCAN_TIME
 #define LONG_KEY_TIME       (20)    
 
-//!< \note Frist KEY_REPEAT Time = KEY_LONG_PRESSED + KEY_REPEAT_TIME + 1
-//!        After KEY_REPEAT Time = KEY_REPEAT_TIME + 1
+//! \brief KEY_REPEAT Event 
+//!        Frist KEY_REPEAT = KEY_LONG_PRESSED + KEY_REPEAT_TIME + 1
+//!        Frist KEY_REPEAT Time = Frist KEY_REPEAT * KEY_SCAN_TIME
+//!        After KEY_REPEAT Time = (KEY_REPEAT_TIME + 1) * KEY_SCAN_TIME
 #define KEY_REPEAT_TIME     (10)    
 
 //! \brief if KEY_USING_OS = 1, indicate your program run on the os. 
